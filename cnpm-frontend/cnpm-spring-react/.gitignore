@@ -1,0 +1,52 @@
+# Operating System
+.DS_Store
+Thumbs.db
+
+# IDE - IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Build Outputs & Caches
+/target/
+/dist/
+/.vite/
+/.cache/
+*.log
+
+# Dependencies
+/node_modules/
+
+# Maven
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+# Spring Boot
+HELP.md
+
+# STS
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+# NetBeans
+/nbproject/private/
+/nbbuild/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+# VS Code
+.vscode/
+
+# Docker Local Overrides
+**/docker-compose.override.yml
+**/Dockerfile.local
