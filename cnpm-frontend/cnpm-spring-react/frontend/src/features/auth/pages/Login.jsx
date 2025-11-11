@@ -86,7 +86,7 @@ export default Login;
 import React, { useState, useContext } from "react";
 import { AuthContext } from "../contexts/AuthContext";
 import authService from "../services/authService";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -179,6 +179,16 @@ const Login = () => {
               {loading ? "Đang đăng nhập..." : "SIGN IN"}
             </button>
           </form>
+
+          <div className="text-center mt-6">
+            <span className="text-gray-600">Chưa có tài khoản? </span>
+            <Link
+              to="/register"
+              className="text-teal-500 hover:text-teal-600 font-semibold"
+            >
+              Đăng ký ngay
+            </Link>
+          </div>
         </div>
       </div>
     </div>

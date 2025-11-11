@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DataTable } from '../../../components/Table/DataTable';
+import DataTable from '../../../components/Table/DataTable';
 import feeCollectionApi from '../../../api/feeCollectionApi';
 
 const FeeByHousehold = ({ householdId }) => {

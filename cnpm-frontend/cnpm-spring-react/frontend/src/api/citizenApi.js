@@ -1,18 +1,31 @@
 import axiosInstance from './axiosConfig';
 
 const citizenApi = {
-  // Existing CRUD endpoints
+  // Basic CRUD endpoints
   getAll: (params) => axiosInstance.get('/nhan-khau', { params }),
   getById: (id) => axiosInstance.get(`/nhan-khau/${id}`),
   create: (data) => axiosInstance.post('/nhan-khau', data),
   update: (id, data) => axiosInstance.put(`/nhan-khau/${id}`, data),
   delete: (id) => axiosInstance.delete(`/nhan-khau/${id}`),
 
-  // New endpoints for search and statistics
+  // Search endpoint
   search: (params) => axiosInstance.get('/nhan-khau/search', { params }),
+
+  // Statistics endpoints
   getStats: () => axiosInstance.get('/nhan-khau/stats'),
   getGenderStats: () => axiosInstance.get('/nhan-khau/stats/gender'),
-  getAgeStats: () => axiosInstance.get('/nhan-khau/stats/age')
+  getAgeStats: () => axiosInstance.get('/nhan-khau/stats/age'),
+
+  // Tạm vắng (Temporary absence) endpoints
+  updateTamVang: (id, data) => axiosInstance.put(`/nhan-khau/${id}/tamvang`, data),
+  deleteTamVang: (id) => axiosInstance.delete(`/nhan-khau/${id}/tamvang`),
+
+  // Tạm trú (Temporary residence) endpoints
+  updateTamTru: (id, data) => axiosInstance.put(`/nhan-khau/${id}/tamtru`, data),
+  deleteTamTru: (id) => axiosInstance.delete(`/nhan-khau/${id}/tamtru`),
+
+  // Khai tử (Death declaration) endpoint
+  updateKhaiTu: (id, data) => axiosInstance.put(`/nhan-khau/${id}/khaitu`, data)
 };
 
 export default citizenApi;

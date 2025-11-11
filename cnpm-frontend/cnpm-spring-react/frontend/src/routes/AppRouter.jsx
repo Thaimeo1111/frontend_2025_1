@@ -53,7 +53,11 @@ import Layout from '../components/Layout';
 
 // Auth pages
 import Login from '../features/auth/pages/Login';
+import Register from '../features/auth/pages/Register';
+import RegisterTest from '../features/auth/pages/RegisterTest';
 import Dashboard from '../features/auth/pages/Dashboard';
+
+// UPDATED: Added Register and RegisterTest routes
 
 // Household pages
 import HouseholdList from '../features/household/pages/List';
@@ -81,7 +85,9 @@ const AppRouter = () => {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
-
+        <Route path="/register" element={<Register />} />
+        <Route path="/register-test" element={<RegisterTest />} />
+        
         {/* Protected routes */}
         <Route element={<PrivateRoute />}>
           <Route element={<Layout />}>
@@ -126,7 +132,7 @@ const AppRouter = () => {
         </Route>
 
         {/* Fallback route */}
-        
+        <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </BrowserRouter>
   );

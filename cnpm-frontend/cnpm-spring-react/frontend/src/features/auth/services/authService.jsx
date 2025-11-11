@@ -93,10 +93,11 @@ export default authService;
 import authApi from '../../../api/authApi';
 
 export const authService = {
-  login: async (email, password) => {
+  login: async (username, password) => {
     try {
-      const response = await authApi.login({ email, password });
-      const { token, user } = response.data;
+      // Backend expects { username, password } not { email, password }
+      const response = await authApi.login({ username, password });
+      const { token, username: user } = response.data;
       
       // Lưu token vào localStorage
       localStorage.setItem('token', token);

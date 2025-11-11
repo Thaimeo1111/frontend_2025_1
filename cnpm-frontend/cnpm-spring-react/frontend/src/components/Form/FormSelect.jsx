@@ -6,6 +6,7 @@ const FormSelect = ({
   register,
   name,
   options,
+  placeholder = 'Vui lòng chọn...',
   ...rest
 }) => {
   return (
@@ -19,7 +20,8 @@ const FormSelect = ({
         {...register(name)}
         {...rest}
       >
-        {options.map(option => (
+        <option value="">{placeholder}</option>
+        {options && options.length > 0 && options.map(option => (
           <option key={option.value} value={option.value}>
             {option.label}
           </option>
