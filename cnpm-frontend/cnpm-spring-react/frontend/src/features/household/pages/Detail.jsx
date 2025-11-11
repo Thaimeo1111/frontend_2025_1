@@ -31,12 +31,17 @@ const HouseholdDetail = () => {
 
   const handleSubmit = async (data) => {
     try {
+      const isNew = id === 'new';
       await handleApi(
-        () => id === 'new'
+        () => isNew
           ? householdApi.create(data)
           : householdApi.update(id, data),
-        'Không thể lưu thông tin hộ khẩu'
+        `Không thể ${isNew ? 'tạo mới' : 'cập nhật'} thông tin hộ khẩu`
       );
+      
+      // Show success message
+      alert(`${isNew ? 'Tạo mới' : 'Cập nhật'} hộ khẩu thành công!`);
+      
       navigate('/household');
     } catch (err) {
       // Error is handled by handleApi
@@ -50,28 +55,34 @@ const HouseholdDetail = () => {
     <div className="container mx-auto px-4 py-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-2xl font-bold">
-          {id === 'new' ? 'Thêm hộ khẩu mới' : 'Chi tiết hộ khẩu'}
+          {id === 'new' ? 'Thêm hộ khẩu mới' : `Chi tiết hộ khẩu ${household?.soHoKhau || ''}`}
         </h1>
         <button
           onClick={() => navigate('/household')}
           className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
         >
-          Quay lại
+          ← Quay lại danh sách
         </button>
       </div>
 
       <div className="space-y-6">
-        {/* Existing household form */}
+        {/* Household information card */}
         <div className="bg-white rounded-lg shadow-lg p-6">
+          <h2 className="text-xl font-semibold mb-4">
+            {id === 'new' ? 'Thông tin hộ khẩu mới' : 'Thông tin hộ khẩu'}
+          </h2>
           <HouseholdForm
             initialValues={household || {}}
             onSubmit={handleSubmit}
           />
         </div>
 
-        {/* Fee collection history */}
-        {id !== 'new' && (
-          <FeeByHousehold householdId={id} />
+        {/* Fee collection history - only show for existing household */}
+        {id !== 'new' && household && (
+          <div className="bg-white rounded-lg shadow-lg p-6">
+            <h2 className="text-xl font-semibold mb-4">Lịch sử đóng phí</h2>
+            <FeeByHousehold householdId={id} />
+          </div>
         )}
       </div>
     </div>

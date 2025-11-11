@@ -19,8 +19,9 @@ const HouseholdList = () => {
   const [selectedHousehold, setSelectedHousehold] = useState(null);
 
   const columns = [
-    { key: 'maHoKhau', title: 'Mã hộ khẩu' },
-    { key: 'chuHo', title: 'Chủ hộ' },
+    { key: 'id', title: 'ID' },
+    { key: 'soHoKhau', title: 'Số hộ khẩu' },
+    { key: 'tenChuHo', title: 'Tên chủ hộ' },
     { key: 'diaChi', title: 'Địa chỉ' },
     { key: 'soThanhVien', title: 'Số thành viên' }
   ];
@@ -49,12 +50,16 @@ const HouseholdList = () => {
   const handleView = (row) => navigate(`/household/${row.id}`);
 
   const handleDelete = async (row) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa hộ khẩu này?')) return;
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa hộ khẩu "${row.soHoKhau}" - ${row.tenChuHo}?`)) return;
     try {
       await handleApi(
         () => householdApi.delete(row.id),
         'Không thể xóa hộ khẩu'
       );
+      
+      // Show success message
+      alert('Xóa hộ khẩu thành công!');
+      
       await fetchHouseholds();
     } catch (err) {
       // Error is handled by handleApi
@@ -68,12 +73,17 @@ const HouseholdList = () => {
 
   const handleModalSave = async (data) => {
     try {
+      const isNew = !selectedHousehold;
       await handleApi(
-        () => selectedHousehold
-          ? householdApi.update(selectedHousehold.id, data)
-          : householdApi.create(data),
-        'Không thể lưu hộ khẩu'
+        () => isNew
+          ? householdApi.create(data)
+          : householdApi.update(selectedHousehold.id, data),
+        `Không thể ${isNew ? 'tạo mới' : 'cập nhật'} hộ khẩu`
       );
+      
+      // Show success message
+      alert(`${isNew ? 'Tạo mới' : 'Cập nhật'} hộ khẩu thành công!`);
+      
       await fetchHouseholds();
       handleModalClose();
     } catch (err) {
