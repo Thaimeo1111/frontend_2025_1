@@ -4,15 +4,9 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  soHoKhau: yup.string()
-    .required('Vui lòng nhập số hộ khẩu')
-    .min(3, 'Số hộ khẩu phải có ít nhất 3 ký tự'),
-  tenChuHo: yup.string()
-    .required('Vui lòng nhập tên chủ hộ')
-    .min(3, 'Tên chủ hộ phải có ít nhất 3 ký tự'),
-  diaChi: yup.string()
-    .required('Vui lòng nhập địa chỉ')
-    .min(10, 'Địa chỉ phải có ít nhất 10 ký tự'),
+  soHoKhau: yup.string().required('Vui lòng nhập số hộ khẩu').min(3, 'Số hộ khẩu phải có ít nhất 3 ký tự'),
+  tenChuHo: yup.string().required('Vui lòng nhập tên chủ hộ').min(3, 'Tên chủ hộ phải có ít nhất 3 ký tự'),
+  diaChi: yup.string().required('Vui lòng nhập địa chỉ'),
   noiDungThayDoiChuHo: yup.string()
 });
 
@@ -31,7 +25,7 @@ export const HouseholdForm = ({ initialValues, onSubmit }) => {
         <input
           type="text"
           {...register('soHoKhau')}
-          placeholder="Ví dụ: HK001"
+          placeholder="VD: HK001, HK002..."
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.soHoKhau && (
@@ -46,7 +40,7 @@ export const HouseholdForm = ({ initialValues, onSubmit }) => {
         <input
           type="text"
           {...register('tenChuHo')}
-          placeholder="Họ và tên chủ hộ"
+          placeholder="Nhập họ tên chủ hộ"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.tenChuHo && (
@@ -61,7 +55,7 @@ export const HouseholdForm = ({ initialValues, onSubmit }) => {
         <textarea
           {...register('diaChi')}
           rows={3}
-          placeholder="Số nhà, tên đường, phường/xã, quận/huyện, tỉnh/thành phố"
+          placeholder="Nhập địa chỉ đầy đủ (số nhà, đường, phường, quận)"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.diaChi && (
@@ -76,7 +70,7 @@ export const HouseholdForm = ({ initialValues, onSubmit }) => {
         <textarea
           {...register('noiDungThayDoiChuHo')}
           rows={2}
-          placeholder="Lý do thay đổi thông tin chủ hộ (không bắt buộc)"
+          placeholder="Ghi chú về lý do thay đổi chủ hộ (nếu có)"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
       </div>
