@@ -4,10 +4,10 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 
 const schema = yup.object().shape({
-  maHoKhau: yup.string().required('Vui lòng nhập mã hộ khẩu'),
-  chuHo: yup.string().required('Vui lòng nhập tên chủ hộ'),
+  soHoKhau: yup.string().required('Vui lòng nhập số hộ khẩu').min(3, 'Số hộ khẩu phải có ít nhất 3 ký tự'),
+  tenChuHo: yup.string().required('Vui lòng nhập tên chủ hộ').min(3, 'Tên chủ hộ phải có ít nhất 3 ký tự'),
   diaChi: yup.string().required('Vui lòng nhập địa chỉ'),
-  ghiChu: yup.string()
+  noiDungThayDoiChuHo: yup.string()
 });
 
 export const HouseholdForm = ({ initialValues, onSubmit }) => {
@@ -20,39 +20,42 @@ export const HouseholdForm = ({ initialValues, onSubmit }) => {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Mã hộ khẩu
+          Số hộ khẩu <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          {...register('maHoKhau')}
+          {...register('soHoKhau')}
+          placeholder="VD: HK001, HK002..."
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
-        {errors.maHoKhau && (
-          <p className="mt-1 text-sm text-red-600">{errors.maHoKhau.message}</p>
+        {errors.soHoKhau && (
+          <p className="mt-1 text-sm text-red-600">{errors.soHoKhau.message}</p>
         )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Chủ hộ
+          Tên chủ hộ <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
-          {...register('chuHo')}
+          {...register('tenChuHo')}
+          placeholder="Nhập họ tên chủ hộ"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
-        {errors.chuHo && (
-          <p className="mt-1 text-sm text-red-600">{errors.chuHo.message}</p>
+        {errors.tenChuHo && (
+          <p className="mt-1 text-sm text-red-600">{errors.tenChuHo.message}</p>
         )}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Địa chỉ
+          Địa chỉ <span className="text-red-500">*</span>
         </label>
         <textarea
           {...register('diaChi')}
           rows={3}
+          placeholder="Nhập địa chỉ đầy đủ (số nhà, đường, phường, quận)"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
         {errors.diaChi && (
@@ -62,11 +65,12 @@ export const HouseholdForm = ({ initialValues, onSubmit }) => {
 
       <div>
         <label className="block text-sm font-medium text-gray-700">
-          Ghi chú
+          Nội dung thay đổi chủ hộ
         </label>
         <textarea
-          {...register('ghiChu')}
+          {...register('noiDungThayDoiChuHo')}
           rows={2}
+          placeholder="Ghi chú về lý do thay đổi chủ hộ (nếu có)"
           className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
         />
       </div>

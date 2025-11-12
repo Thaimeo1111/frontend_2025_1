@@ -17,10 +17,11 @@ const HouseholdList = () => {
   } = useApiHandler([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedHousehold, setSelectedHousehold] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const columns = [
-    { key: 'maHoKhau', title: 'Mã hộ khẩu' },
-    { key: 'chuHo', title: 'Chủ hộ' },
+    { key: 'soHoKhau', title: 'Số hộ khẩu' },
+    { key: 'tenChuHo', title: 'Tên chủ hộ' },
     { key: 'diaChi', title: 'Địa chỉ' },
     { key: 'soThanhVien', title: 'Số thành viên' }
   ];
@@ -49,12 +50,16 @@ const HouseholdList = () => {
   const handleView = (row) => navigate(`/household/${row.id}`);
 
   const handleDelete = async (row) => {
-    if (!window.confirm('Bạn có chắc chắn muốn xóa hộ khẩu này?')) return;
+    if (!window.confirm(`Bạn có chắc chắn muốn xóa hộ khẩu "${row.soHoKhau}" - ${row.tenChuHo}?`)) return;
     try {
       await handleApi(
         () => householdApi.delete(row.id),
         'Không thể xóa hộ khẩu'
       );
+      
+      // Show success message
+      alert('Xóa hộ khẩu thành công!');
+      
       await fetchHouseholds();
     } catch (err) {
       // Error is handled by handleApi
@@ -68,12 +73,17 @@ const HouseholdList = () => {
 
   const handleModalSave = async (data) => {
     try {
+      const isNew = !selectedHousehold;
       await handleApi(
-        () => selectedHousehold
-          ? householdApi.update(selectedHousehold.id, data)
-          : householdApi.create(data),
-        'Không thể lưu hộ khẩu'
+        () => isNew
+          ? householdApi.create(data)
+          : householdApi.update(selectedHousehold.id, data),
+        `Không thể ${isNew ? 'tạo mới' : 'cập nhật'} hộ khẩu`
       );
+      
+      // Show success message
+      alert(`${isNew ? 'Tạo mới' : 'Cập nhật'} hộ khẩu thành công!`);
+      
       await fetchHouseholds();
       handleModalClose();
     } catch (err) {
@@ -81,25 +91,79 @@ const HouseholdList = () => {
     }
   };
 
+  // Filter households by search term
+  const filteredHouseholds = households.filter(household => {
+    if (!searchTerm.trim()) return true;
+    const search = searchTerm.toLowerCase();
+    return (
+      household.soHoKhau?.toLowerCase().includes(search) ||
+      household.tenChuHo?.toLowerCase().includes(search) ||
+      household.diaChi?.toLowerCase().includes(search)
+    );
+  });
+
   if (loading) return <Loader />;
   if (error) return <ErrorMessage message={error} onRetry={fetchHouseholds} />;
 
   return (
-    <div className="container mx-auto px-4">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold">Quản lý hộ khẩu</h1>
-        <button
-          onClick={handleAdd}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
-        >
-          Thêm hộ khẩu
-        </button>
+    <div className="container mx-auto px-4 py-6">
+      {/* Header với title và actions */}
+      <div className="mb-6">
+        <div className="flex items-center justify-between mb-4">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Quản lý hộ khẩu</h1>
+            <p className="text-sm text-gray-600 mt-1">
+              Tổng số: <span className="font-semibold text-blue-600">{households.length}</span> hộ khẩu
+            </p>
+          </div>
+          <button
+            onClick={handleAdd}
+            className="flex items-center gap-2 bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 transition shadow-md hover:shadow-lg"
+          >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Thêm hộ khẩu
+          </button>
+        </div>
+
+        {/* Search bar */}
+        <div className="bg-white rounded-lg shadow p-4">
+          <div className="flex items-center gap-3">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+            <input
+              type="text"
+              placeholder="Tìm kiếm theo số hộ khẩu, tên chủ hộ, địa chỉ..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="flex-1 outline-none text-gray-700 placeholder-gray-400"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="text-gray-400 hover:text-gray-600 transition"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            )}
+          </div>
+          {searchTerm && (
+            <p className="text-sm text-gray-500 mt-2">
+              Tìm thấy <span className="font-semibold text-blue-600">{filteredHouseholds.length}</span> kết quả
+            </p>
+          )}
+        </div>
       </div>
 
+      {/* Table */}
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <DataTable
           columns={columns}
-          data={households}
+          data={filteredHouseholds}
           loading={loading}
           onEdit={handleEdit}
           onDelete={handleDelete}

@@ -185,3 +185,28 @@ integer($int32)
 
 Lưu ý:
 UnderAge có thể lớn hơn RetireAge
+
+
+POST
+/api/dot-thu-phi
+Tạo đợt thu phí mới
+
+{
+  "tenDot": "Thu phí quản lý tháng 5/2025",
+  "loai": "BAT_BUOC",
+  "ngayBatDau": "2025-01-01",
+  "ngayKetThuc": "2024-01-31",
+  "dinhMuc": 50000
+}
+
+return 201 
+
+Lưu ý:
+Ngày kết thúc trước ngày bắt đầu
+Tên đợt không trùng với thời gian 
+
+Hiện tại đang có hiện tượng
+Chủ hộ khẩu ảo : người đứng tên không phải là một trong các nhân khẩu đang có trong hệ Thống
+quản lý nhân khẩu
+
+Tên và Địa chỉ có thể trùng nhau nhưng ID HoKhau khác nhau
