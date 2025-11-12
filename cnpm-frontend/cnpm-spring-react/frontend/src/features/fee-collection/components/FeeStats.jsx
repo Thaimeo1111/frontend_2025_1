@@ -16,6 +16,15 @@ const FeeStats = ({ stats }) => {
 
   // Lấy chart data từ array items
   const chartData = stats.filter(item => item.name && item.value !== undefined);
+  
+  // Tính tỷ lệ thu từ dữ liệu của chart
+  // Nếu có "Đã thu" và "Chưa thu", tính: Đã thu / (Đã thu + Chưa thu) * 100
+  let collectionRate = stats.collectionRate || 0;
+  if (!collectionRate && chartData.length >= 2) {
+    const paidValue = chartData.find(item => item.name === 'Đã thu')?.value || 0;
+    const totalValue = chartData.reduce((sum, item) => sum + item.value, 0);
+    collectionRate = totalValue > 0 ? Math.round((paidValue / totalValue) * 100) : 0;
+  }
 
   return (
     <div className="bg-white p-4 rounded-lg shadow">
@@ -38,13 +47,37 @@ const FeeStats = ({ stats }) => {
           <Tooltip />
           <Legend />
         </PieChart>
-        <div className="p-4">
-          <h4 className="font-semibold mb-2">Tổng quan</h4>
-          <ul className="space-y-2">
-            <li>Tổng số tiền đã thu: {stats.totalCollected || 0}</li>
-            <li>Tỷ lệ thu: {stats.collectionRate || 0}%</li>
-            <li>Số hộ đã nộp: {stats.householdsPaid || 0}</li>
-            <li>Số hộ chưa nộp: {stats.householdsUnpaid || 0}</li>
+        <div className="p-4 space-y-4">
+          <h4 className="font-semibold mb-3">Tổng quan</h4>
+          
+          {/* Tỷ lệ thu - Progress bar */}
+          <div>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-sm font-medium text-gray-700">Tỷ lệ thu</span>
+              <span className="text-lg font-bold text-blue-600">{collectionRate}%</span>
+            </div>
+            <div className="w-full bg-gray-200 rounded-full h-2">
+              <div 
+                className="bg-blue-600 h-2 rounded-full transition-all" 
+                style={{ width: `${Math.min(collectionRate, 100)}%` }}
+              />
+            </div>
+          </div>
+          
+          {/* Thông tin chi tiết */}
+          <ul className="space-y-2 text-sm">
+            <li className="flex justify-between">
+              <span className="text-gray-600">Tổng số tiền đã thu:</span>
+              <span className="font-semibold">{new Intl.NumberFormat('vi-VN').format(stats.totalCollected || 0)} ₫</span>
+            </li>
+            <li className="flex justify-between">
+              <span className="text-gray-600">Số hộ đã nộp:</span>
+              <span className="font-semibold text-green-600">{stats.householdsPaid || 0} hộ</span>
+            </li>
+            <li className="flex justify-between">
+              <span className="text-gray-600">Số hộ chưa nộp:</span>
+              <span className="font-semibold text-orange-600">{stats.householdsUnpaid || 0} hộ</span>
+            </li>
           </ul>
         </div>
       </div>

@@ -95,14 +95,14 @@ import authApi from '../../../api/authApi';
 export const authService = {
   login: async (username, password) => {
     try {
-      // Backend expects { username, password } not { email, password }
+      // Backend returns { token, username, role }
       const response = await authApi.login({ username, password });
-      const { token, username: user } = response.data;
+      const { token, username: user, role } = response.data;
       
       // Lưu token vào localStorage
       localStorage.setItem('token', token);
       
-      return { token, user };
+      return { token, user, role };
     } catch (error) {
       if (error.response) {
         throw new Error(error.response.data.message || 'Sai tài khoản hoặc mật khẩu');

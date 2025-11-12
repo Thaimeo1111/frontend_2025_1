@@ -105,7 +105,8 @@ const Login = () => {
     try {
       const response = await authService.login(username, password);
       if (response?.token) {
-        setUser({ username, token: response.token });
+        // Lưu user với role từ backend
+        setUser({ username, token: response.token, role: response.role });
         navigate("/dashboard");
       } else {
         // Nếu authService trả về null/undefined hoặc object không có token

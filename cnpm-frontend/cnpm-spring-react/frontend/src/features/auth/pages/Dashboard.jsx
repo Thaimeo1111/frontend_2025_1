@@ -62,20 +62,31 @@ export default function Dashboard() {
       console.log('Dashboard - Parsed gender stats:', genderStats);
       console.log('Dashboard - Parsed age stats:', ageStats);
 
-      // Parse Fee Stats
+      // Parse Fee Stats từ backend format:
+      // { totalRecords: 1, totalCollected: 3000000, totalHouseholds: 1, paidRecords: 1, unpaidRecords: 0 }
       const rawFeeStats = feeData?.data || feeData;
       const feeCollectionStats = [];
       
       if (rawFeeStats) {
+        const totalCollected = rawFeeStats.totalCollected || 0;
+        const totalHouseholds = rawFeeStats.totalHouseholds || 0;
+        const paidRecords = rawFeeStats.paidRecords || 0;
+        const unpaidRecords = rawFeeStats.unpaidRecords || 0;
+        
+        // Chart data: Đã thu vs Chưa thu
         feeCollectionStats.push(
-          { name: 'Đã thu', value: rawFeeStats.totalCollected || 0 },
-          { name: 'Chưa thu', value: (rawFeeStats.totalRequired || 0) - (rawFeeStats.totalCollected || 0) }
+          { name: 'Đã thu', value: paidRecords },
+          { name: 'Chưa thu', value: unpaidRecords }
         );
-        // Thêm các thuộc tính bổ sung
-        feeCollectionStats.totalCollected = rawFeeStats.totalCollected || 0;
-        feeCollectionStats.collectionRate = rawFeeStats.collectionRate || 0;
-        feeCollectionStats.householdsPaid = rawFeeStats.paidCount || 0;
-        feeCollectionStats.householdsUnpaid = rawFeeStats.unpaidCount || 0;
+        
+        // Stats properties
+        feeCollectionStats.totalCollected = totalCollected;
+        feeCollectionStats.totalHouseholds = totalHouseholds;
+        feeCollectionStats.collectionRate = totalHouseholds > 0 
+          ? Math.round((paidRecords / totalHouseholds) * 100) 
+          : 0;
+        feeCollectionStats.householdsPaid = paidRecords;
+        feeCollectionStats.householdsUnpaid = unpaidRecords;
       }
 
       setStats({

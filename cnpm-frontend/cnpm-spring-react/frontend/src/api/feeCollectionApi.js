@@ -8,6 +8,9 @@ const feeCollectionApi = {
   update: (id, data) => axiosInstance.put(`/thu-phi-ho-khau/${id}`, data),
   delete: (id) => axiosInstance.delete(`/thu-phi-ho-khau/${id}`),
 
+  // Calculate fee for a household in a specific period
+  calculateFee: (data) => axiosInstance.get('/thu-phi-ho-khau/calc', { params: data }),
+
   // New endpoints for household-specific and statistics
   getByHousehold: (householdId) => axiosInstance.get(`/thu-phi-ho-khau/ho-khau/${householdId}`),
   getStats: () => axiosInstance.get('/thu-phi-ho-khau/stats'),
