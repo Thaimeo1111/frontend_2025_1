@@ -23,74 +23,83 @@ export default function Dashboard() {
     try {
       setLoading(true);
       
-      // Gọi các API endpoints đúng theo tài liệu
-      const [genderStats, ageStats, feeStats] = await Promise.all([
+      console.log('Dashboard: Fetching stats...');
+      const [genderData, ageData, feeData] = await Promise.all([
         citizenApi.getGenderStats(),
         citizenApi.getAgeStats(),
         feeCollectionApi.getStats(),
       ]);
 
-      // Transform dữ liệu từ backend sang format của components
-      const genderData = [
-        { name: 'Nam', value: genderStats.data.male },
-        { name: 'Nữ', value: genderStats.data.female }
-      ];
+      console.log('Dashboard - Gender response:', genderData);
+      console.log('Dashboard - Age response:', ageData);
+      console.log('Dashboard - Fee response:', feeData);
 
-      const ageData = [
-        { name: 'Trẻ em', range: `< ${ageStats.data.underAge || 18}`, value: ageStats.data.children, count: ageStats.data.children },
-        { name: 'Lao động', range: 'Tuổi lao động', value: ageStats.data.working, count: ageStats.data.working },
-        { name: 'Nghỉ hưu', range: `≥ ${ageStats.data.retireAge || 60}`, value: ageStats.data.retired, count: ageStats.data.retired }
-      ];
+      // Parse Gender Stats từ backend format:
+      // { total: 2, byGender: { "Nam": 2, "Nữ": 0 } }
+      let genderStats = [];
+      const rawGenderStats = genderData?.data || genderData;
+      if (rawGenderStats?.byGender) {
+        console.log('Dashboard: Parsing gender stats...');
+        genderStats = Object.entries(rawGenderStats.byGender).map(([name, value]) => ({
+          name,
+          value
+        }));
+      }
 
-      // Transform fee collection data
-      const feeData = [
-        { name: 'Đã thu', value: feeStats.data.totalCollected },
-        { name: 'Chưa thu', value: feeStats.data.totalRequired - feeStats.data.totalCollected }
-      ];
-      // Thêm các thuộc tính bổ sung vào array để component FeeStats có thể sử dụng
-      feeData.totalCollected = feeStats.data.totalCollected;
-      feeData.collectionRate = feeStats.data.collectionRate;
-      feeData.householdsPaid = feeStats.data.paidCount;
-      feeData.householdsUnpaid = feeStats.data.unpaidCount;
+      // Parse Age Stats từ backend format:
+      // { buckets: { thieuNhi: {...}, diLam: {...}, veHuu: {...} } }
+      let ageStats = [];
+      const rawAgeStats = ageData?.data || ageData;
+      if (rawAgeStats?.buckets) {
+        console.log('Dashboard: Parsing age stats...');
+        ageStats = Object.entries(rawAgeStats.buckets).map(([key, bucket]) => ({
+          range: bucket.label || key,
+          count: bucket.total || 0,
+          byGender: bucket.byGender || {}
+        }));
+      }
+
+      console.log('Dashboard - Parsed gender stats:', genderStats);
+      console.log('Dashboard - Parsed age stats:', ageStats);
+
+      // Parse Fee Stats
+      const rawFeeStats = feeData?.data || feeData;
+      const feeCollectionStats = [];
+      
+      if (rawFeeStats) {
+        feeCollectionStats.push(
+          { name: 'Đã thu', value: rawFeeStats.totalCollected || 0 },
+          { name: 'Chưa thu', value: (rawFeeStats.totalRequired || 0) - (rawFeeStats.totalCollected || 0) }
+        );
+        // Thêm các thuộc tính bổ sung
+        feeCollectionStats.totalCollected = rawFeeStats.totalCollected || 0;
+        feeCollectionStats.collectionRate = rawFeeStats.collectionRate || 0;
+        feeCollectionStats.householdsPaid = rawFeeStats.paidCount || 0;
+        feeCollectionStats.householdsUnpaid = rawFeeStats.unpaidCount || 0;
+      }
 
       setStats({
         citizen: {
-          genderStats: genderData,
-          ageStats: ageData
+          genderStats,
+          ageStats
         },
-        feeCollection: feeData,
+        feeCollection: feeCollectionStats,
       });
-      
-      /* MOCK DATA - Sử dụng khi backend chưa sẵn sàng
-      const mockFeeData = [
-        { name: 'Đã thu', value: 0 },
-        { name: 'Chưa thu', value: 0 }
-      ];
-      // Thêm các thuộc tính bổ sung vào array
-      mockFeeData.totalCollected = 0;
-      mockFeeData.collectionRate = 0;
-      mockFeeData.householdsPaid = 0;
-      mockFeeData.householdsUnpaid = 0;
-      
-      setStats({
-        citizen: { 
-          genderStats: [
-            { name: 'Nam', value: 0 },
-            { name: 'Nữ', value: 0 }
-          ],
-          ageStats: [
-            { name: '0-18', range: '0-18', value: 0, count: 0 },
-            { name: '19-35', range: '19-35', value: 0, count: 0 },
-            { name: '36-60', range: '36-60', value: 0, count: 0 },
-            { name: '60+', range: '60+', value: 0, count: 0 }
-          ]
-        },
-        feeCollection: mockFeeData,
-      });
-      */
       
     } catch (err) {
-      setError(err.message);
+      console.error('Dashboard: Không thể tải thống kê:', err);
+      console.error('Dashboard: Error details:', err.response?.data);
+      
+      // Fallback: Set empty stats để component vẫn render
+      setStats({
+        citizen: {
+          genderStats: [],
+          ageStats: []
+        },
+        feeCollection: [],
+      });
+      
+      setError('Không thể tải thống kê. Vui lòng thử lại sau.');
     } finally {
       setLoading(false);
     }
